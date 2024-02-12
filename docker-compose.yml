@@ -12,6 +12,7 @@ services:
     hostname: api01
     environment:
       - DB_HOSTNAME=db
+      - RUBY_YJIT_ENABLE=1
     
     # Não é necessário expor qualquer porta além da porta do load balancer,
     # mas é comum as pessoas o fazerem para testarem suas APIs e conectarem
@@ -24,7 +25,7 @@ services:
       resources:
         limits:
           cpus: "0.3"
-          memory: "100MB"
+          memory: "150MB"
 
   api02:
     # Essa sintaxe reusa o que foi declarado em 'api01'.
@@ -71,7 +72,7 @@ services:
           # de memória. A distribuição feita aqui é apenas
           # um exemplo – distribua como quiser.
           cpus: "0.7"
-          memory: "300MB"
+          memory: "200MB"
 
 # O uso do modo `bridge` deve ser adequado à carga que será usada no teste.
 # A edição anterior se beneficiou do modo host pois o volume de requisições

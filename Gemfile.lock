@@ -3,7 +3,6 @@ GEM
   specs:
     base64 (0.2.0)
     connection_pool (2.4.1)
-    diff-lcs (1.5.1)
     json (2.7.1)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
@@ -12,31 +11,14 @@ GEM
     puma (6.4.2)
       nio4r (~> 2.0)
     rack (3.0.9)
-    rack-cors (2.0.1)
-      rack (>= 2.0.0)
     rack-protection (4.0.0)
       base64 (>= 0.1.0)
       rack (>= 3.0.0, < 4)
     rack-session (2.0.0)
       rack (>= 3.0.0)
-    rack-test (2.1.0)
-      rack (>= 1.3)
     rackup (2.1.0)
       rack (>= 3)
       webrick (~> 1.8)
-    rspec (3.13.0)
-      rspec-core (~> 3.13.0)
-      rspec-expectations (~> 3.13.0)
-      rspec-mocks (~> 3.13.0)
-    rspec-core (3.13.0)
-      rspec-support (~> 3.13.0)
-    rspec-expectations (3.13.0)
-      diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.13.0)
-    rspec-mocks (3.13.0)
-      diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.13.0)
-    rspec-support (3.13.0)
     ruby2_keywords (0.0.5)
     sinatra (4.0.0)
       mustermann (~> 3.0)
@@ -56,11 +38,8 @@ DEPENDENCIES
   pg
   puma
   rack
-  rack-cors
-  rack-test
   rackup
-  rspec
   sinatra
 
 BUNDLED WITH
-   2.4.10
+   2.5.3

@@ -1,6 +1,5 @@
 require 'sinatra'
 require 'json'
-# require_relative 'setup/configurations'
 require_relative 'app/controllers/home_controller'
 require_relative 'app/controllers/clients_controller'
 class Server < Sinatra::Base
