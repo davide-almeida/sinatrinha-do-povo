@@ -3,12 +3,16 @@ GEM
   specs:
     base64 (0.2.0)
     diff-lcs (1.5.1)
+    json (2.7.1)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
     nio4r (2.7.0)
+    pg (1.5.4)
     puma (6.4.2)
       nio4r (~> 2.0)
     rack (3.0.9)
+    rack-cors (2.0.1)
+      rack (>= 2.0.0)
     rack-protection (4.0.0)
       base64 (>= 0.1.0)
       rack (>= 3.0.0, < 4)
@@ -46,8 +50,11 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  json
+  pg
   puma
   rack
+  rack-cors
   rack-test
   rackup
   rspec
