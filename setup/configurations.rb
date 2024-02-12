@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'rack/cors'
+require 'json'
 
 before do
   content_type :json

@@ -1,7 +1,8 @@
 CREATE TABLE clients (
 	id SERIAL PRIMARY KEY,
 	name VARCHAR(50) NOT NULL,
-	limit_amount INTEGER NOT NULL
+	limit_amount INTEGER DEFAULT 0 NOT NULL,
+  balance INTEGER DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE transactions (
@@ -12,14 +13,6 @@ CREATE TABLE transactions (
   transaction_description VARCHAR(10) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_clients_transactions_id
-    FOREIGN KEY (client_id) REFERENCES clients (id)
-);
-
-CREATE TABLE balance (
-  id SERIAL PRIMARY KEY,
-  client_id INTEGER NOT NULL,
-  amount INTEGER NOT NULL,
-  CONSTRAINT fk_clients_balance_id
     FOREIGN KEY (client_id) REFERENCES clients (id)
 );
 
