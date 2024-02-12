@@ -3,7 +3,6 @@ GEM
   specs:
     base64 (0.2.0)
     connection_pool (2.4.1)
-    json (2.7.1)
     mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
     nio4r (2.7.0)
@@ -34,7 +33,6 @@ PLATFORMS
 
 DEPENDENCIES
   connection_pool
-  json
   pg
   puma
   rack

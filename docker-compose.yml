@@ -12,8 +12,7 @@ services:
     hostname: api01
     environment:
       - DB_HOSTNAME=db
-      - RUBY_YJIT_ENABLE=1
-    
+
     # Não é necessário expor qualquer porta além da porta do load balancer,
     # mas é comum as pessoas o fazerem para testarem suas APIs e conectarem
     # ao banco de dados na fase de desenvolvimento.
@@ -29,13 +28,13 @@ services:
 
   api02:
     # Essa sintaxe reusa o que foi declarado em 'api01'.
-    <<: *api 
+    <<: *api
     hostname: api02
     environment:
       - DB_HOSTNAME=db
     ports:
       - "8082:8080"
- 
+
   nginx:
     image: nginx:latest
     volumes:
@@ -45,7 +44,7 @@ services:
       - api02
     ports:
         # Obrigatório expor/usar a porta 9999 no load balancer!
-      - "9999:9999" 
+      - "9999:9999"
     deploy:
       resources:
         limits:

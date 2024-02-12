@@ -18,6 +18,21 @@ class Client
     ).to_a
   end
 
+  def self.test(client_id, amount, transaction_type, transaction_description)
+    amount = -amount if transaction_type == 'd'
+    sql = <<~SQL
+      WITH create_transaction AS (
+        INSERT INTO transactions (client_id, amount, transaction_type, transaction_description) VALUES ($1, $2, $3, $4)
+      )
+
+      UPDATE clients SET balance = balance + $2 WHERE id = $1
+      RETURNING balance, limit_amount
+    SQL
+    conn.exec_params(sql, [client_id, amount, transaction_type, transaction_description])
+  end
+
+  private
+
   def self.conn
     ConnectDatabase.connection.checkout
   end

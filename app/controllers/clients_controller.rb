@@ -6,51 +6,30 @@ class ClientsController < Sinatra::Base
   post '/clientes/:id/transacoes' do
     body = request.body.read
     parsed_body = JSON.parse(body)
-    valor = parsed_body['valor']
-    content_type :json
 
-    halt 422, { message: 'Descricao inválido' }.to_json if parsed_body['descricao'].nil? || parsed_body['descricao'].empty? || parsed_body['descricao'].length > 10
-    halt 422, { message: 'Valor inválido' }.to_json if parsed_body['valor'].nil? || !parsed_body['valor'].is_a?(Integer)
-    halt 422, { message: 'Tipo inválido' }.to_json if parsed_body['tipo'].nil? || parsed_body['tipo'].empty?
+    halt 404 if params[:id].to_i > 5
+    halt 422 if parsed_body['descricao'].nil? || !(1..10).cover?(parsed_body['descricao'].length)
+    halt 422 if !parsed_body['valor'].is_a?(Integer)
+    halt 422 if !%w[c d].include?(parsed_body['tipo'])
 
-    client = nil
-
-    ConnectDatabase.connection.checkout.transaction do
-      client = Client.by_id(params[:id])
-      if client.nil?
-        halt 404, { message: 'Cliente não encontrado' }.to_json
-      end
-
-      if parsed_body['tipo'] == 'd'
-        valor = -valor
-        if (client['balance'].to_i + valor).abs > client['limit_amount'].to_i
-          halt 422, { message: 'Saldo insuficiente' }.to_json
-        end
-      end
-
-      Transaction.create(params[:id], parsed_body['valor'], parsed_body['tipo'], parsed_body['descricao'])
-
-      Client.update_balance(params[:id], valor)
-
-      client = Client.by_id(params[:id])
-    end
+    client = Client.test(params[:id], parsed_body['valor'], parsed_body['tipo'], parsed_body['descricao'])
 
     status 200
-
+    content_type :json
     {
       limite: client['limit_amount'],
       saldo: client['balance']
     }.to_json
+  rescue StandardError => e
+    puts e.message
   end
 
   get '/clientes/:id/extrato' do
     client = Client.statement(params[:id])
-    if client.empty?
-      halt 404, { message: 'Cliente não encontrado' }.to_json
-    end
+    halt 404 if client.empty?
 
     status 200
-
+    content_type :json
     {
       "saldo": {
         "total": client.first['balance'].to_i,

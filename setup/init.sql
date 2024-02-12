@@ -1,16 +1,16 @@
 CREATE TABLE clients (
 	id SERIAL PRIMARY KEY,
-	name VARCHAR(50) NOT NULL,
-	limit_amount INTEGER DEFAULT 0 NOT NULL,
-  balance INTEGER DEFAULT 0 NOT NULL
+	name VARCHAR(50),
+	limit_amount INTEGER DEFAULT 0,
+  balance INTEGER CHECK(balance >= -limit_amount) DEFAULT 0
 );
 
 CREATE TABLE transactions (
   id SERIAL PRIMARY KEY,
-  client_id INTEGER NOT NULL,
-  amount INTEGER NOT NULL,
-  transaction_type CHAR(1) NOT NULL,
-  transaction_description VARCHAR(10) NOT NULL,
+  client_id INTEGER,
+  amount INTEGER,
+  transaction_type CHAR(1),
+  transaction_description VARCHAR(10),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_clients_transactions_id
     FOREIGN KEY (client_id) REFERENCES clients (id)
