@@ -23,3 +23,7 @@ make run
 |-|-|
 | Executar o projeto | `make run` |
 | Remover os containers | `make clean` |
+
+## Na minha máquina funciona
+![image](https://github.com/davide-almeida/sinatrinha-do-povo/assets/85287720/e92d1a37-7d09-4d81-b9f1-b25d090ba27f)
+
