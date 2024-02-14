@@ -5,13 +5,18 @@ require 'json'
 class ClientsController < Sinatra::Base
   post '/clientes/:id/transacoes' do
     body = request.body.read
-    parsed_body = JSON.parse(body)
-    valor = parsed_body['valor']
+    parsed_body = JSON.parse(body, symbolize_names: true) # valor, tipo e descricao
+    valor = parsed_body[:valor]
     content_type :json
 
-    halt 422, { message: 'Descricao inválido' }.to_json if parsed_body['descricao'].nil? || parsed_body['descricao'].empty? || parsed_body['descricao'].length > 10
-    halt 422, { message: 'Valor inválido' }.to_json if parsed_body['valor'].nil? || !parsed_body['valor'].is_a?(Integer)
-    halt 422, { message: 'Tipo inválido' }.to_json if parsed_body['tipo'].nil? || parsed_body['tipo'].empty?
+    halt 422, { message: 'Descricao inválida' }.to_json if parsed_body[:descricao].nil?
+    halt 422, { message: 'Descricao inválida' }.to_json if parsed_body[:descricao].empty?
+    halt 422, { message: 'Descricao inválida' }.to_json if parsed_body[:descricao].length > 10
+    halt 422, { message: 'Valor inválido' }.to_json if parsed_body[:valor].nil?
+    halt 422, { message: 'Valor inválido' }.to_json if !parsed_body[:valor].is_a?(Integer)
+    halt 422, { message: 'Tipo inválido' }.to_json if parsed_body[:tipo].nil?
+    halt 422, { message: 'Tipo inválido' }.to_json if parsed_body[:tipo].empty?
+    halt 422, { message: 'Tipo inválido' }.to_json if parsed_body[:tipo] != 'd' && parsed_body[:tipo] != 'c'
 
     client = nil
 
@@ -21,14 +26,14 @@ class ClientsController < Sinatra::Base
         halt 404, { message: 'Cliente não encontrado' }.to_json
       end
 
-      if parsed_body['tipo'] == 'd'
+      if parsed_body[:tipo] == 'd'
         valor = -valor
         if (client['balance'].to_i + valor).abs > client['limit_amount'].to_i
           halt 422, { message: 'Saldo insuficiente' }.to_json
         end
       end
 
-      Transaction.create(params[:id], parsed_body['valor'], parsed_body['tipo'], parsed_body['descricao'])
+      Transaction.create(params[:id], parsed_body[:valor], parsed_body[:tipo], parsed_body[:descricao])
 
       Client.update_balance(params[:id], valor)
 
