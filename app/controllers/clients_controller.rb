@@ -5,7 +5,7 @@ require 'json'
 class ClientsController < Sinatra::Base
   post '/clientes/:id/transacoes' do
     body = request.body.read
-    parsed_body = JSON.parse(body, symbolize_names: true) # valor, tipo e descricao
+    parsed_body = JSON.parse(body, symbolize_names: true)
     content_type :json
 
     halt 422 unless (1..10).cover? parsed_body[:descricao]&.length

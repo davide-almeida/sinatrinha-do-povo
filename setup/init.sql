@@ -1,11 +1,9 @@
 CREATE TABLE clients (
-	id SERIAL UNIQUE NOT NULL,
+	id SERIAL PRIMARY KEY,
 	name VARCHAR(50) NOT NULL,
 	limit_amount INTEGER DEFAULT 0 NOT NULL,
   balance INTEGER DEFAULT 0 NOT NULL
 );
-
-CREATE INDEX idx_clients_id ON clients (id) INCLUDE (limit_amount, balance);
 
 CREATE TABLE transactions (
   id SERIAL PRIMARY KEY,
@@ -17,8 +15,6 @@ CREATE TABLE transactions (
   CONSTRAINT fk_clients_transactions_id
     FOREIGN KEY (client_id) REFERENCES clients (id)
 );
-
-CREATE INDEX idx_transactions_client_id ON transactions (client_id);
 
 DO $$
 BEGIN

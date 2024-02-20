@@ -7,16 +7,6 @@ class Client
   end
 
   def self.update_balance(id, amount, transaction_type, conn)
-    # conn.exec_params('UPDATE clients SET balance = balance + $1 WHERE id = $2', [amount, id])
-
-    # sent_amount = transaction_type == 'd' ? -amount : amount
-
-    # if transaction_type == 'd'
-    #   sent_amount = -amount
-    # elsif transaction_type == 'c'
-    #   sent_amount = amount
-    # end
-
     update_query = <<~SQL
       UPDATE clients
       SET balance = balance + $1
