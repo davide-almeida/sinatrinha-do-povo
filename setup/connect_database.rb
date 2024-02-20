@@ -3,7 +3,7 @@ require 'connection_pool'
 
 class ConnectDatabase
   def self.connection
-    @connection ||= ConnectionPool.new(size: 10, timeout: 300) do
+    @connection ||= ConnectionPool.new(size: 15, timeout: 30) do
       PG.connect(
         dbname: 'rinha',
         host: 'db',

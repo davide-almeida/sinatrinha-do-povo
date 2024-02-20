@@ -6,38 +6,41 @@ class ClientsController < Sinatra::Base
   post '/clientes/:id/transacoes' do
     body = request.body.read
     parsed_body = JSON.parse(body, symbolize_names: true) # valor, tipo e descricao
-    valor = parsed_body[:valor]
     content_type :json
 
-    halt 422, { message: 'Descricao inválida' }.to_json if parsed_body[:descricao].nil?
-    halt 422, { message: 'Descricao inválida' }.to_json if parsed_body[:descricao].empty?
-    halt 422, { message: 'Descricao inválida' }.to_json if parsed_body[:descricao].length > 10
-    halt 422, { message: 'Valor inválido' }.to_json if parsed_body[:valor].nil?
-    halt 422, { message: 'Valor inválido' }.to_json if !parsed_body[:valor].is_a?(Integer)
-    halt 422, { message: 'Tipo inválido' }.to_json if parsed_body[:tipo].nil?
-    halt 422, { message: 'Tipo inválido' }.to_json if parsed_body[:tipo].empty?
-    halt 422, { message: 'Tipo inválido' }.to_json if parsed_body[:tipo] != 'd' && parsed_body[:tipo] != 'c'
+    halt 422 unless (1..10).cover? parsed_body[:descricao]&.length
+    halt 422 unless parsed_body[:valor].is_a?(Integer)
+    halt 422 unless ['c', 'd'].include?(parsed_body[:tipo])
 
     client = nil
 
-    ConnectDatabase.connection.checkout.transaction do
-      client = Client.by_id(params[:id])
+    ConnectDatabase.connection.checkout.transaction do |conn|
+      client = Client.by_id(params[:id], conn)
+
       if client.nil?
-        halt 404, { message: 'Cliente não encontrado' }.to_json
+        halt 404
       end
 
-      if parsed_body[:tipo] == 'd'
-        valor = -valor
-        if (client['balance'].to_i + valor).abs > client['limit_amount'].to_i
-          halt 422, { message: 'Saldo insuficiente' }.to_json
-        end
+      sent_amount = parsed_body[:tipo] == 'd' ? -parsed_body[:valor] : parsed_body[:valor]
+
+      if client['balance'].to_i + sent_amount < -client['limit_amount'].to_i
+        halt 422
       end
 
-      Transaction.create(params[:id], parsed_body[:valor], parsed_body[:tipo], parsed_body[:descricao])
+      client = Client.update_balance(
+        params[:id],
+        sent_amount,
+        parsed_body[:tipo],
+        conn
+      ).first
 
-      Client.update_balance(params[:id], valor)
-
-      client = Client.by_id(params[:id])
+      Transaction.create(
+        params[:id],
+        parsed_body[:valor],
+        parsed_body[:tipo],
+        parsed_body[:descricao],
+        conn
+      )
     end
 
     status 200
@@ -51,7 +54,7 @@ class ClientsController < Sinatra::Base
   get '/clientes/:id/extrato' do
     client = Client.statement(params[:id])
     if client.empty?
-      halt 404, { message: 'Cliente não encontrado' }.to_json
+      halt 404
     end
 
     status 200
