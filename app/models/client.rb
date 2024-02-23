@@ -18,10 +18,12 @@ class Client
   end
 
   def self.statement(client_id)
-    ConnectDatabase.connection.checkout.exec_params(
-      'SELECT clients.balance, clients.limit_amount, transactions.amount, transactions.transaction_type, transactions.transaction_description, transactions.created_at FROM clients LEFT JOIN transactions ON clients.id = transactions.client_id
-      WHERE clients.id = $1
-      ORDER BY transactions.created_at DESC LIMIT 10', [client_id]
-    ).to_a
+    ConnectDatabase.pool.with do |conn|
+      conn.exec_params(
+        'SELECT clients.balance, clients.limit_amount, transactions.amount, transactions.transaction_type, transactions.transaction_description, transactions.created_at FROM clients LEFT JOIN transactions ON clients.id = transactions.client_id
+        WHERE clients.id = $1
+        ORDER BY transactions.created_at DESC LIMIT 10', [client_id]
+      ).to_a
+    end
   end
 end

@@ -2,7 +2,7 @@ require 'pg'
 require 'connection_pool'
 
 class ConnectDatabase
-  def self.connection
+  def self.pool
     @connection ||= ConnectionPool.new(size: 30, timeout: 30) do
       PG.connect(
         dbname: 'rinha',

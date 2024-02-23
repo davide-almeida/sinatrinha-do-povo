@@ -14,33 +14,35 @@ class ClientsController < Sinatra::Base
 
     client = nil
 
-    ConnectDatabase.connection.checkout.transaction do |conn|
-      client = Client.by_id(params[:id], conn)
+    ConnectDatabase.pool.with do |conn|
+      conn.transaction do
+        client = Client.by_id(params[:id], conn)
 
-      if client.nil?
-        halt 404
+        if client.nil?
+          halt 404
+        end
+
+        sent_amount = parsed_body[:tipo] == 'd' ? -parsed_body[:valor] : parsed_body[:valor]
+
+        if client['balance'].to_i + sent_amount < -client['limit_amount'].to_i
+          halt 422
+        end
+
+        client = Client.update_balance(
+          params[:id],
+          sent_amount,
+          parsed_body[:tipo],
+          conn
+        ).first
+
+        Transaction.create(
+          params[:id],
+          parsed_body[:valor],
+          parsed_body[:tipo],
+          parsed_body[:descricao],
+          conn
+        )
       end
-
-      sent_amount = parsed_body[:tipo] == 'd' ? -parsed_body[:valor] : parsed_body[:valor]
-
-      if client['balance'].to_i + sent_amount < -client['limit_amount'].to_i
-        halt 422
-      end
-
-      client = Client.update_balance(
-        params[:id],
-        sent_amount,
-        parsed_body[:tipo],
-        conn
-      ).first
-
-      Transaction.create(
-        params[:id],
-        parsed_body[:valor],
-        parsed_body[:tipo],
-        parsed_body[:descricao],
-        conn
-      )
     end
 
     status 200
